@@ -1,0 +1,32 @@
+version: "3"
+services:
+  db:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=test"
+    restart: always
+    volumes:
+      - "../../epytodo.sql:/docker-entrypoint-initdb.d/epytodo.sql"
+  myadmin:
+    image: phpmyadmin
+    ports:
+      - "5001:80"
+    links:
+      - "db:db"
+    restart: always
+  app:
+    build: app
+    ports:
+      - "5000:80"
+    environment:
+      - "PORT_SERVER=80"
+      - "MYSQL_DATABASE=db_epytodo"
+      - "MYSQL_HOST=db"
+      - "MYSQL_USER=root"
+      - "MYSQL_ROOT_PASSWORD=test"
+      - "SECRET=df6e6e13a9b0257efa2602bff114bdde4bb460c0da2a81ebe8e7050741a5c21658221991f4f62f1dad9d15c001b770ee114877e47318f35b93c8973c0a2e7a5f"
+    restart: always
+    depends_on:
+      - "db"
